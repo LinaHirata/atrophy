@@ -58,6 +58,7 @@ function OnPageReset(String page)
 	RestorationXp = storageutil.GetIntValue(none, "RestorationXp", 3)
 	SmithingXp = storageutil.GetIntValue(none, "SmithingXp", 3)
 	SneakXp = storageutil.GetIntValue(none, "SneakXp", 3)
+	
 	TwoHandedXp = storageutil.GetIntValue(none, "TwoHandedXp", 3)
 	DaysInterval = storageutil.GetIntValue(none, "DaysInterval", 1)
 	ExperienceToggle = storageutil.GetIntValue(none, "ExperienceToggle", 0) as Bool
@@ -65,6 +66,7 @@ function OnPageReset(String page)
 	SleepToggle = storageutil.GetIntValue(none, "SleepToggle", 0) as Bool
 	NotifToggle = storageutil.GetIntValue(none, "NotifToggle", 0) as Bool
 	NotifToggleSkill = storageutil.GetIntValue(none, "NotifToggleSkill", 0) as Bool
+
 	self.SetCursorFillMode(self.LEFT_TO_RIGHT)
 	self.SetCursorPosition(0)
 	self.AddHeaderOption("Skill-Use Check Interval", 0)

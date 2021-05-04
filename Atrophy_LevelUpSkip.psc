@@ -16,26 +16,17 @@ Float ActorHealth
 Float ActorStamina
 Float ActorMagicka
 
-;-- Functions ---------------------------------------
+;-- Events ---------------------------------------
 
-function OnMenuClose(String menu)
-
-	if menu == "LevelUp Menu" && storageutil.GetintValue(none, "Level_Down_Counter", 0) > 0 && !storageutil.GetintValue(none, "ExperienceToggle", 0) as Bool
-		ThePlayerRef.SetActorValue("Health", ActorHealth)
-		ThePlayerRef.SetActorValue("Magicka", ActorMagicka)
-		ThePlayerRef.SetActorValue("Stamina", ActorStamina)
-		game.ModPerkPoints(-1)
-		storageutil.SetintValue(none, "Level_Down_Counter", storageutil.GetintValue(none, "Level_Down_Counter", 0) - 1)
-	endIf
+function OnInit()
+	OnPlayerLoadGame()
 endFunction
 
 function OnPlayerLoadGame()
-
-	self.RegisterForMenu("LevelUp Menu")
+	RegisterForMenu("LevelUp Menu")
 endFunction
 
 function OnMenuOpen(String menu)
-
 	if menu == "LevelUp Menu" && storageutil.GetintValue(none, "Level_Down_Counter", 0) > 0 && !storageutil.GetintValue(none, "ExperienceToggle", 0) as Bool
 		SRPLevelupMessage.Show(0 as Float, 0 as Float, 0 as Float, 0 as Float, 0 as Float, 0 as Float, 0 as Float, 0 as Float, 0 as Float)
 		ActorHealth = ThePlayerRef.GetActorValue("Health")
@@ -44,11 +35,12 @@ function OnMenuOpen(String menu)
 	endIf
 endFunction
 
-; Skipped compiler generated GetState
-
-; Skipped compiler generated GotoState
-
-function OnInit()
-
-	self.OnPlayerLoadGame()
+function OnMenuClose(String menu)
+	if menu == "LevelUp Menu" && storageutil.GetintValue(none, "Level_Down_Counter", 0) > 0 && !storageutil.GetintValue(none, "ExperienceToggle", 0) as Bool
+		ThePlayerRef.SetActorValue("Health", ActorHealth)
+		ThePlayerRef.SetActorValue("Magicka", ActorMagicka)
+		ThePlayerRef.SetActorValue("Stamina", ActorStamina)
+		game.ModPerkPoints(-1)
+		storageutil.SetintValue(none, "Level_Down_Counter", storageutil.GetintValue(none, "Level_Down_Counter", 0) - 1)
+	endIf
 endFunction

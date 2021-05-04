@@ -1,10 +1,3 @@
-;/ Decompiled by Champollion V1.0.1
-Source   : Atrophy_Function.psc
-Modified : 2021-05-04 11:07:59
-Compiled : 2021-05-04 11:08:43
-User     : Payam
-Computer : DESKTOP-QDPS8AP
-/;
 scriptName Atrophy_Function extends Quest
 
 ;-- Properties --------------------------------------
@@ -61,6 +54,7 @@ event OnSleepStart(Float afSleepStartTime, Float afDesiredSleepEndTime)
 endEvent
 
 event OnUpdateGameTime()
+	;Debug.StartStackProfiling()
 ; -----------------------------------------------------------------------------------------------
 ; -------------------------------------------- Init ---------------------------------------------
 ; -----------------------------------------------------------------------------------------------
@@ -890,11 +884,12 @@ event OnUpdateGameTime()
 
 	int SUDaysInterval = StorageUtil.GetIntValue(none, "DaysInterval", 1)
 
-	int newSUSleepCounter = SUSleepCounter + SUDaysInterval
+	int newSUSleepCounter = SUSleepCounter as int + SUDaysInterval
 	if newSUSleepCounter > 40
 		newSUSleepCounter = 40
 	endIf
 	StorageUtil.SetintValue(none, "SleepCounter", newSUSleepCounter)
 
 	RegisterForSingleUpdateGameTime((SUDaysInterval * 24) as Float)
+	;Debug.StopStackProfiling()
 endEvent
