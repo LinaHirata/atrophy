@@ -95,52 +95,55 @@ event OnUpdateGameTime()
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
 
 		; case 2: decreasing skill experience will cause level drop
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			; decrease skill level
-			ThePlayer.SetActorValue("Speechcraft", skillAV - 1.0)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			; decreasing skill level wont cause to to drop further than 15
+			if skillAV > 15.0
+				; decrease skill level
+				ThePlayer.SetActorValue("Speechcraft", skillAV - 1.0)
 
-			; notify player
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Speech level")
-			endIf
-
-			; decrease skill experience to match new level
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-
-			; Experience mod isnt installed
-			if !SUExperienceToggle 
-				; case 1: decreasing character experience wont cause level drop
-				if playerXP > skillAV + 1.0
-					; decrease character experience
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-
-				; case 2: decreasing character experience will cause level drop
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					; decrease character level
-					Game.SetPlayerLevel(playerLVL - 1)
-
-					; notify player
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-
-					; increase 'level down' counter
-					SULevel_Down_Counter += 1
-
-					; decrease character experience to match new level
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-
-				; case 3: decreasing character experience will cause level drop further than 1
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					; set character experience to 0
-					Game.SetPlayerExperience(0.000000)
+				; notify player
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Speech level")
 				endIf
-			endif
 
-		; case 3: decreasing skill experience will cause level drop further than 15
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			; set skill experience to 0
-			skillAVInfo.SetSkillExperience(0.000000)
+				; decrease skill experience to match new level
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+
+				; Experience mod isnt installed
+				if !SUExperienceToggle 
+					; case 1: decreasing character experience wont cause level drop
+					if playerXP > skillAV + 1.0
+						; decrease character experience
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+
+					; case 2: decreasing character experience will cause level drop
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						; decrease character level
+						Game.SetPlayerLevel(playerLVL - 1)
+
+						; notify player
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+
+						; increase 'level down' counter
+						SULevel_Down_Counter += 1
+
+						; decrease character experience to match new level
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+
+					; case 3: decreasing character experience will cause level drop further than 1
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						; set character experience to 0
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+
+			; case 3: decreasing skill experience will cause level drop further than 15
+			elseIf skillAV <= 15.0
+				; set skill experience to 0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endif
 		endIf
 	endif
 
@@ -161,28 +164,30 @@ event OnUpdateGameTime()
 	if AlchemyXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Alchemy", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost an Alchemy level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Alchemy", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost an Alchemy level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -203,28 +208,30 @@ event OnUpdateGameTime()
 	if AlterationXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Alteration", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost an Alteration level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Alteration", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost an Alteration level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -245,28 +252,30 @@ event OnUpdateGameTime()
 	if ArcheryXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Marksman", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost an Archery level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Marksman", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost an Archery level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -287,28 +296,30 @@ event OnUpdateGameTime()
 	if BlockXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Block", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Blocking level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Block", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Blocking level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -329,28 +340,30 @@ event OnUpdateGameTime()
 	if ConjurationXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Conjuration", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Conjuration level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Conjuration", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Conjuration level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -371,28 +384,30 @@ event OnUpdateGameTime()
 	if DestructionXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Destruction", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Destruction level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Destruction", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Destruction level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -413,28 +428,30 @@ event OnUpdateGameTime()
 	if EnchantingXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Enchanting", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost an Enchanting level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Enchanting", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost an Enchanting level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -455,28 +472,30 @@ event OnUpdateGameTime()
 	if HeavyArmorXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("HeavyArmor", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Heavy Armor level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("HeavyArmor", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Heavy Armor level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -497,28 +516,30 @@ event OnUpdateGameTime()
 	if IllusionXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Illusion", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost an Illusion level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Illusion", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost an Illusion level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -539,28 +560,30 @@ event OnUpdateGameTime()
 	if LightArmorXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("LightArmor", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Light Armor level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("LightArmor", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Light Armor level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -581,28 +604,30 @@ event OnUpdateGameTime()
 	if LockpickingXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Lockpicking", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Lockpicking level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Lockpicking", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Lockpicking level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -623,28 +648,30 @@ event OnUpdateGameTime()
 	if OneHandedXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("OneHanded", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a One Handed level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("OneHanded", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a One Handed level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -665,28 +692,30 @@ event OnUpdateGameTime()
 	if PickpocketXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Pickpocket", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Pickpocket level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Pickpocket", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Pickpocket level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -707,28 +736,30 @@ event OnUpdateGameTime()
 	if RestorationXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Restoration", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Restoration level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Restoration", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Restoration level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -749,28 +780,30 @@ event OnUpdateGameTime()
 	if SmithingXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Smithing", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Smithing level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Smithing", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Smithing level")
 				endIf
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
 			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -791,28 +824,30 @@ event OnUpdateGameTime()
 	if SneakXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("Sneak", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Sneak level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("Sneak", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Sneak level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
@@ -833,28 +868,30 @@ event OnUpdateGameTime()
 	if TwoHandedXp == skillXP
 		if skillXP >= fDecreaseSkillBy
 			skillAVInfo.SetSkillExperience(skillXP - fDecreaseSkillBy)
-		elseIf skillXP < fDecreaseSkillBy && skillAV > 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			ThePlayer.SetActorValue("TwoHanded", skillAV - 1.0)
-			if SUNotifToggleSkill
-				Debug.Notification("You have lost a Two Handed level")
-			endIf
-			skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
-			if !SUExperienceToggle 
-				if playerXP > skillAV + 1.0
-					Game.SetPlayerExperience(playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL > 1
-					Game.SetPlayerLevel(playerLVL - 1)
-					if SUNotifToggle
-						Debug.Notification("Your Character level has dropped")
-					endIf
-					SULevel_Down_Counter += 1
-					Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
-				elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
-					Game.SetPlayerExperience(0.000000)
+		elseIf (skillAV != 100.0 || SUUncappedToggle)
+			if skillAV > 15.0
+				ThePlayer.SetActorValue("TwoHanded", skillAV - 1.0)
+				if SUNotifToggleSkill
+					Debug.Notification("You have lost a Two Handed level")
 				endIf
-			endif
-		elseIf skillXP < fDecreaseSkillBy && skillAV <= 15.0 && (skillAV != 100.0 || SUUncappedToggle)
-			skillAVInfo.SetSkillExperience(0.000000)
+				skillAVInfo.SetSkillExperience(skillXPForLevel - fDecreaseSkillBy + skillXP)
+				if !SUExperienceToggle 
+					if playerXP > skillAV + 1.0
+						Game.SetPlayerExperience(playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL > 1
+						Game.SetPlayerLevel(playerLVL - 1)
+						if SUNotifToggle
+							Debug.Notification("Your Character level has dropped")
+						endIf
+						SULevel_Down_Counter += 1
+						Game.SetPlayerExperience(Game.GetExperienceForLevel(playerLVL) + playerXP - skillAV - 1.0)
+					elseIf playerXP < skillAV + 1.0 && playerLVL <= 1
+						Game.SetPlayerExperience(0.000000)
+					endIf
+				endif
+			elseIf skillAV <= 15.0
+				skillAVInfo.SetSkillExperience(0.000000)
+			endIf
 		endIf
 	endif
 
